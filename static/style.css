@@ -1,0 +1,32 @@
+/* Common stylings */
+* {
+    transition: 0.3s all ease;
+}
+
+.app-title {
+    font-size: 30px;
+    font-weight: bolder;
+}
+
+/* Register form */
+.form-div {
+    padding: 100px;
+    padding-left: 30%;
+    padding-right: 30%;
+}
+
+.form-div button[type='submit'] {
+    width: 100%;
+}
+
+.form-div .input-group-text {
+    width: 150px;
+}
+
+
+@media screen and (max-width: 768px) {
+    .form-div {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+}
