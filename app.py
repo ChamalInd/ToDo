@@ -33,7 +33,14 @@ def after_request(response):
 @app.route('/', methods=['POST', 'GET'])
 @login_required
 def index():
-    return render_template('index.html')
+    if request.method == 'POST':
+        item = request.form.get('item')
+        # adding new ongoing task
+        cur.execute('INSERT INTO todoitems VALUES(?, 1, ?)', (session['user_id'], item))
+        con.commit()
+        
+    items = cur.execute('SELECT item from todoitems WHERE user_id=? AND category_id=1', (session['user_id'], )).fetchall()
+    return render_template('index.html', items=items)
 
 
 @app.route('/register', methods=['POST', 'GET'])

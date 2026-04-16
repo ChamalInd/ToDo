@@ -3,3 +3,26 @@
 {% block title %}
 DashBoard
 {% endblock %}
+
+{% block name %}
+DashBoard
+{% endblock %}
+
+{% block main %}
+<div>
+    <form action="/" method="post">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" autocomplete="off" name="item">
+            <button class="btn btn-outline-secondary" type="submit">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+<div>
+    {% for i in items %}
+    <p>{{ i[0] }}</p>
+    {% endfor %}
+</div>
+{% endblock %}
