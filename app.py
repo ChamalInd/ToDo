@@ -1,6 +1,7 @@
 from flask import Flask, session, render_template, flash, request, redirect
 from flask_session import Session
 from werkzeug.security import generate_password_hash, check_password_hash
+from cryptography.fernet import Fernet
 
 from helper import login_required
 
@@ -35,11 +36,24 @@ def after_request(response):
 def index():
     if request.method == 'POST':
         item = request.form.get('item')
-        # adding new ongoing task
-        cur.execute('INSERT INTO todoitems VALUES(?, 1, ?)', (session['user_id'], item))
-        con.commit()
+
+        if item:
+            # encrypting item
+            f = Fernet(session['key'])
+            encrypted_item = f.encrypt(item.encode())
+            # adding new ongoing task
+            cur.execute('INSERT INTO todoitems VALUES(?, 1, ?)', (session['user_id'], encrypted_item))
+            con.commit()
+        else:
+            flash('Task cannot be empty.')
+    
+    # decrypting items
+    _ = cur.execute('SELECT item from todoitems WHERE user_id=? AND category_id=1', (session['user_id'], )).fetchall()
+    f = Fernet(session['key'])
+    items = []
+    for i in _:
+        items.append(f.decrypt(i[0]).decode())
         
-    items = cur.execute('SELECT item from todoitems WHERE user_id=? AND category_id=1', (session['user_id'], )).fetchall()
     return render_template('index.html', items=items)
 
 
@@ -82,11 +96,18 @@ def register():
         # generating hash for the password
         password_hash = generate_password_hash(password)
 
-        cur.execute('INSERT INTO users (name, username, hash) VALUES(?, ?, ?)', (name, username, password_hash, ))
+        # generating key for todo item encryptions
+        key = Fernet.generate_key()
+
+        cur.execute('INSERT INTO users (name, username, hash, key) VALUES(?, ?, ?, ?)', (name, username, password_hash, key, ))
         con.commit()
 
         flash(f'Welcome aboard {name}!')
-        session['user_id'] = username
+        session['user_id'] = cur.execute('SELECT id FROM users WHERE username=? AND name=?', (username, name)).fetchall()[0][0]
+        print(session['user_id'])
+        session['user_name'] = username
+        session['name'] = name
+        session['key'] = key
         return redirect('/')
     return render_template('register.html')
 
@@ -97,13 +118,14 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        user_data = cur.execute('SELECT username, hash, name, id FROM users').fetchall()
+        user_data = cur.execute('SELECT username, hash, name, id, key FROM users').fetchall()
         for i in user_data:
             if i[0] == username and check_password_hash(i[1], password):
                 flash(f'Welcome back {i[2]}!')
                 session['user_id'] = i[3]
                 session['user_name'] = i[0]
                 session['name'] = i[2]
+                session['key'] = i[4]
                 return redirect('/')
             
             if i[0] == username and (not check_password_hash(i[1], password)):
