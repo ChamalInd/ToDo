@@ -13,7 +13,7 @@ DashBoard
     <form action="/" method="post">
         <div class="input-group mb-3">
             <input type="text" class="form-control" autocomplete="off" name="item">
-            <button class="btn btn-outline-secondary" type="submit">
+            <button class="btn btn-outline-secondary" type="submit" name="action" value="add-new">
                 <i class="fa-solid fa-plus"></i>
             </button>
         </div>
@@ -21,8 +21,19 @@ DashBoard
 </div>
 
 <div>
-    {% for i in items %}
-    <p>{{ i }}</p>
+    <h3>On Going</h3>
+    <form action="/" method="post" id="ongoing-form">
+        {% for i in ongoing %}
+        <input class="ongoing-tasks" type="checkbox" name="task" id="{{ i[0] }}" value="{{ i[1] }}"> 
+        <label for="{{ i[0] }}">{{ i[0] }}</label> <br>
+        {% endfor %}
+    </form>
+</div>
+
+<div>
+    <h3>Completed</h3>
+    {% for i in completed %}
+    <p>{{ i[0] }}</p>
     {% endfor %}
 </div>
 {% endblock %}
