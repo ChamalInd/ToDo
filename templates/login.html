@@ -3,3 +3,28 @@
 {% block title %}
 LogIn
 {% endblock %}
+
+{% block name %}
+LogIn
+{% endblock %}
+
+{% block main %}
+<div class="form-div">
+    <form action="/login" method="post">
+        <div class="input-group mb-3">
+            <label for="username" class="input-group-text">User Name</label>
+            <input type="text" class="form-control" id="username" placeholder="JohnDoe" autocomplete="off" name="username">
+        </div>
+        <div class="input-group mb-3">
+            <label for="password" class="input-group-text">Password</label>
+            <input type="password" class="form-control" id="password" autocomplete="off" name="password"
+                aria-describedby="view-btn">
+            <button class="btn btn-outline-secondary password" type="button" id="view-btn"
+                onclick="viewPassword('password')">Show</button>
+        </div>
+        <div class="mb-3">
+            <button class="btn btn-primary" type="submit">Log In</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

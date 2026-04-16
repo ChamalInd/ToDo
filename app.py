@@ -86,6 +86,25 @@ def register():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user_data = cur.execute('SELECT username, hash, name, id FROM users').fetchall()
+        for i in user_data:
+            if i[0] == username and check_password_hash(i[1], password):
+                flash(f'Welcome back {i[2]}!')
+                session['user_id'] = i[3]
+                session['user_name'] = i[0]
+                session['name'] = i[2]
+                return redirect('/')
+            
+            if i[0] == username and (not check_password_hash(i[1], password)):
+                flash('Incorrect password.')
+                return redirect('/login')
+        else:
+            flash('User not registered.')
+
     return render_template('login.html')
 
 
