@@ -3,6 +3,11 @@
     transition: 0.3s all ease;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    text-align: center;
+    font-weight: bolder;
+}
+
 .app-title {
     font-size: 30px;
     font-weight: bolder;
@@ -19,7 +24,7 @@
     width: 100%;
 }
 
-.form-div .input-group-text, .change-password .input-group-text {
+.form-div .input-group-text, .sub-container .input-group-text {
     width: 150px;
 }
 
@@ -50,11 +55,6 @@
     overflow-y: auto;
 }
 
-.task-section .task-sub h3 {
-    text-align: center;
-    font-weight: bolder;
-}
-
 .task-section .task-sub form, 
 .task-section .task-sub form .input-group {
     width: 100%;
@@ -79,9 +79,44 @@
     max-width: 20px;
 }
 
+/* Profile page  */
+.container {
+    padding: 5px;
+    padding-top: 20px;
+}
+
+.sub-container {
+    padding-left: 20%;
+    padding-right: 20%;
+}
+
+.sub-container h3 {
+    padding: 5px;
+    padding-top: 50px;
+}
+
+.sub-container table {
+    width: 100%;
+    padding: auto;
+}
+
+.sub-container table tr th {
+    padding-left: 100px;
+    width: 50%;
+}
+
+.sub-container .full-wdth-btn {
+    width: 100%;
+}
+
+@media screen and (max-width: 1000px) {
+    .sub-container table tr th {
+        padding: 0;
+    }
+}
 
 @media screen and (max-width: 768px) {
-    .form-div {
+    .form-div, .sub-container {
         padding-left: 50px;
         padding-right: 50px;
     }

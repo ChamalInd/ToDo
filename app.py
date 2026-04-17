@@ -3,7 +3,7 @@ from flask_session import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 from cryptography.fernet import Fernet
 
-from helper import login_required
+from helper import login_required, is_good_password
 
 import sqlite3
 
@@ -80,7 +80,10 @@ def index():
     done = cur.execute('SELECT COUNT(*) FROM todoitems WHERE user_id=? AND category_id=2', (session['user_id'], )).fetchall()[0][0]
     total = cur.execute('SELECT COUNT(*) FROM todoitems WHERE user_id=?', (session['user_id'], )).fetchall()[0][0]
 
-    progress = done / total * 100
+    if total > 0:
+        progress = done / total * 100
+    else:
+        progress = 0
 
     return render_template('index.html', ongoing=ongoing, completed=completed, progress=progress)
 
@@ -88,10 +91,72 @@ def index():
 @app.route('/profile', methods=['POST', 'GET'])
 @login_required
 def profile():
+    if request.method == 'POST':
+        # change name action 
+        if request.form.get('action') == 'change-name':
+            new_name = request.form.get('name')
+
+            if new_name:
+                if new_name == session['name']:
+                    flash('New name cannot be same as the old name.')
+                    return redirect('/profile')
+                if new_name == session['user_name']:
+                    flash('Name cannot be same as the username.')
+                    return redirect('/profile')
+                
+                session['name'] = new_name
+                flash('Successfully updated the name.')
+                cur.execute('UPDATE users SET name=? WHERE id=?', (new_name, session['user_id'], ))
+                con.commit()
+                return redirect('/profile')
+            
+            else:
+                flash('Name cannot be empty.')
+                return redirect('/profile')
+        
+        # change password 
+        if request.form.get('action') == 'change-password':
+            current_pass = request.form.get('current-password')
+            new_pass = request.form.get('new-password')
+            confirm_pass = request.form.get('confirm-password')
+
+            if current_pass and new_pass and confirm_pass:
+                pass_hash = cur.execute('SELECT hash FROM users WHERE id=?', (session['user_id'], )).fetchall()[0][0]
+
+                if not check_password_hash(pass_hash, current_pass):
+                    flash('Current password is incorrect.')
+                    return redirect('/profile')
+                
+                if current_pass == new_pass:
+                    flash('New password cannot be the current password')
+                    return redirect('/profile')
+                
+                if not is_good_password(new_pass, confirm_pass, session['user_name'])[0]:
+                    flash(is_good_password(new_pass, confirm_pass, session['user_name'])[1])
+                    return redirect('/profile')
+                
+                flash('Successfully updated the password.')
+                cur.execute('UPDATE users SET hash=? WHERE id=?', (generate_password_hash(new_pass), session['user_id'], ))
+                con.commit()
+                return redirect('/profile')
+                
+            else:
+                flash('Passwords fields cannot be empty.')
+                return redirect('/profile')
+        
+        # delete user profile 
+        if request.form.get('action') == 'delete-user':
+            cur.execute('DELETE FROM users WHERE id=?', (session['user_id'], ))
+            con.commit()
+            session.clear()
+            return redirect('/')
+
     # checking user progress 
     done = cur.execute('SELECT COUNT(*) FROM todoitems WHERE user_id=? AND category_id=2', (session['user_id'], )).fetchall()[0][0]
     total = cur.execute('SELECT COUNT(*) FROM todoitems WHERE user_id=?', (session['user_id'], )).fetchall()[0][0]
+
     remaining = total - done
+
     return render_template('profile.html', tasks=[total, done, remaining])
 
 
@@ -110,20 +175,8 @@ def register():
             flash('All the fields should be filled.')
             return redirect('/register')
         
-        if password != confirm:
-            flash('Passwords dosen\'t match.')
-            return redirect('/register')
-        
-        if len(password) < 8:
-            flash('Password should contain minium 8 characters.')
-            return redirect('/register')
-
-        if (password.isnumeric()) or (password.isalpha()):
-            flash('Password should have both numbers and letters.')
-            return redirect('/register')
-        
-        if (password.islower()) or (password.isupper()):
-            flash('Password should contain both upper and lower characters.')
+        if not is_good_password(password, confirm, username)[0]:
+            flash(is_good_password(password, confirm, username)[1])
             return redirect('/register')
 
         for i in usernames:

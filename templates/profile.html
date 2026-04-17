@@ -9,38 +9,54 @@ Profile
 {% endblock %}
 
 {% block main %}
-<div>
-    <div>
+<div class="container">
+    <div class="sub-container">
         <h2>Welcome {{ session["name"] }}!</h2>
     </div>
 
-    <div>
+    <div class="sub-container">
         <h3>Profile Overview</h3>
         <table>
             <tr>
-                <th>Name : </th>
+                <th>Name</th>
+                <td>:</td>
                 <td>{{ session["name"] }}</td>
             </tr>
             <tr>
-                <th>Username : </th>
+                <th>Username</th>
+                <td>:</td>
                 <td>{{ session["user_name"] }}</td>
             </tr>
             <tr>
-                <th>Total Tasks : </th>
+                <th>Total Tasks</th>
+                <td>:</td>
                 <td>{{ tasks[0] }}</td>
             </tr>
             <tr>
-                <th>Completed Tasks : </th>
+                <th>Completed Tasks</th>
+                <td>:</td>
                 <td>{{ tasks[1] }}</td>
             </tr>
             <tr>
-                <th>OnGoing Tasks : </th>
+                <th>OnGoing Tasks</th>
+                <td>:</td>
                 <td>{{ tasks[2] }}</td>
             </tr>
         </table>
     </div>
 
-    <div class="change-password">
+    <div class="sub-container">
+        <h3>Change Name</h3>
+        <form action="/profile" method="post">
+            <div class="input-group">
+                <label class="input-group-text">New Name</label>
+                <input type="text" class="form-control" name="name" autocomplete="off">
+                <button type="submit" class="btn btn-primary" name="action" value="change-name">Change</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="sub-container">
         <h3>Change Password</h3>
         <form action="/profile" method="post">
             <div class="input-group mb-3">
@@ -61,15 +77,35 @@ Profile
                 <button class="btn btn-outline-secondary confirm-password" type="button" id="view-btn"
                     onclick="viewPassword('confirm-password')">Show</button>
             </div>
-            <button type="submit" class="btn btn-primary" name="action" value="change-password">Change Password</button>
+            <button type="submit" class="btn btn-primary full-wdth-btn" name="action" value="change-password">Change
+                Password</button>
         </form>
     </div>
 
-    <div>
+    <div class="sub-container">
         <h3>Delete Profile</h3>
-        <form action="/profile" method="post">
-            <button type="submit" class="btn btn-danger" name="action" value="delete-user">Delete Profile</button>
-        </form>
+        <button type="button" class="btn btn-danger full-wdth-btn" data-bs-toggle="modal" data-bs-target="#deleteProfile">
+            Delete Profile</button>
+
+        <div class="modal fade" id="deleteProfile" tabindex="-1" aria-labelledby="deleteProfileLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="deleteProfileLabel">Delete Profile</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Warning!! This action cannot be undone.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                        <form action="/profile" method="post">
+                            <button type="submit" class="btn btn-danger" name="action" value="delete-user">delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
