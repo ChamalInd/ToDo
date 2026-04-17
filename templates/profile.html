@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block name %}
+Profile
+{% endblock %}
+
+{% block main %}
+<div>
+    <div>
+        <h2>Welcome {{ session["name"] }}!</h2>
+    </div>
+
+    <div>
+        <h3>Profile Overview</h3>
+        <table>
+            <tr>
+                <th>Name : </th>
+                <td>{{ session["name"] }}</td>
+            </tr>
+            <tr>
+                <th>Username : </th>
+                <td>{{ session["user_name"] }}</td>
+            </tr>
+            <tr>
+                <th>Total Tasks : </th>
+                <td>{{ tasks[0] }}</td>
+            </tr>
+            <tr>
+                <th>Completed Tasks : </th>
+                <td>{{ tasks[1] }}</td>
+            </tr>
+            <tr>
+                <th>OnGoing Tasks : </th>
+                <td>{{ tasks[2] }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="change-password">
+        <h3>Change Password</h3>
+        <form action="/profile" method="post">
+            <div class="input-group mb-3">
+                <label for="current-password" class="input-group-text">Current Password</label>
+                <input type="password" class="form-control" id="current-password" name="current-password">
+                <button class="btn btn-outline-secondary current-password" type="button" id="view-btn"
+                    onclick="viewPassword('current-password')">Show</button>
+            </div>
+            <div class="input-group mb-3">
+                <label for="new-password" class="input-group-text">New Password</label>
+                <input type="password" class="form-control" id="new-password" name="new-password">
+                <button class="btn btn-outline-secondary new-password" type="button" id="view-btn"
+                    onclick="viewPassword('new-password')">Show</button>
+            </div>
+            <div class="input-group mb-3">
+                <label for="confirm-password" class="input-group-text">Confirm Password</label>
+                <input type="password" class="form-control" id="confirm-password" name="confirm-password">
+                <button class="btn btn-outline-secondary confirm-password" type="button" id="view-btn"
+                    onclick="viewPassword('confirm-password')">Show</button>
+            </div>
+            <button type="submit" class="btn btn-primary" name="action" value="change-password">Change Password</button>
+        </form>
+    </div>
+
+    <div>
+        <h3>Delete Profile</h3>
+        <form action="/profile" method="post">
+            <button type="submit" class="btn btn-danger" name="action" value="delete-user">Delete Profile</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

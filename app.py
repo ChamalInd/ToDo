@@ -88,7 +88,11 @@ def index():
 @app.route('/profile', methods=['POST', 'GET'])
 @login_required
 def profile():
-    return render_template('profile.html')
+    # checking user progress 
+    done = cur.execute('SELECT COUNT(*) FROM todoitems WHERE user_id=? AND category_id=2', (session['user_id'], )).fetchall()[0][0]
+    total = cur.execute('SELECT COUNT(*) FROM todoitems WHERE user_id=?', (session['user_id'], )).fetchall()[0][0]
+    remaining = total - done
+    return render_template('profile.html', tasks=[total, done, remaining])
 
 
 @app.route('/register', methods=['POST', 'GET'])

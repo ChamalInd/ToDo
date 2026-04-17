@@ -19,7 +19,7 @@
     width: 100%;
 }
 
-.form-div .input-group-text {
+.form-div .input-group-text, .change-password .input-group-text {
     width: 150px;
 }
 
