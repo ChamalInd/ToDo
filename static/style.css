@@ -23,10 +23,71 @@
     width: 150px;
 }
 
+/* Input field for new tasks  */
+.new-task-section, .task-section {
+    padding: 40px;
+}
+
+/* Task list */
+.task-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(1, auto);
+}
+
+.task-section .task-sub {
+    margin: 5px;
+    padding: 5px;
+    border-radius: 10px;
+    background-color: #dadada;
+    min-height: 50vh;
+    max-height: 50vh;
+}
+
+.task-section .task-sub .task-list {
+    min-height: calc(50vh - 50px);
+    max-height: calc(50vh - 50px);
+    overflow-y: auto;
+}
+
+.task-section .task-sub h3 {
+    text-align: center;
+    font-weight: bolder;
+}
+
+.task-section .task-sub form, 
+.task-section .task-sub form .input-group {
+    width: 100%;
+}
+
+.task-section .task-sub form .input-group .input-group-text,
+.task-section .task-sub form .input-group button[type="submit"] {
+    background-color: #dadada;
+    border: none;
+}
+
+.task-section .task-sub form .input-group input[type="checkbox"] {
+    /* background-color: white; */
+    accent-color: #33ddff;
+    transform: scale(1.2);
+    border-radius: 10px;
+    width: 15px;
+    height: 15px;
+}
+
+.ongoing-tasks {
+    max-width: 20px;
+}
+
 
 @media screen and (max-width: 768px) {
     .form-div {
         padding-left: 50px;
         padding-right: 50px;
+    }
+
+    .task-section {
+        grid-template-rows: repeat(2, auto);
+        grid-template-columns: repeat(1, auto);
     }
 }

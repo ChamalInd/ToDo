@@ -9,10 +9,10 @@ DashBoard
 {% endblock %}
 
 {% block main %}
-<div>
+<div class="new-task-section">
     <form action="/" method="post">
         <div class="input-group mb-3">
-            <input type="text" class="form-control" autocomplete="off" name="item">
+            <input type="text" class="form-control" autocomplete="off" name="item" placeholder="What's on your mind...">
             <button class="btn btn-outline-secondary" type="submit" name="action" value="add-new">
                 <i class="fa-solid fa-plus"></i>
             </button>
@@ -20,20 +20,43 @@ DashBoard
     </form>
 </div>
 
-<div>
-    <h3>On Going</h3>
-    <form action="/" method="post" id="ongoing-form">
-        {% for i in ongoing %}
-        <input class="ongoing-tasks" type="checkbox" name="task" id="{{ i[0] }}" value="{{ i[1] }}"> 
-        <label for="{{ i[0] }}">{{ i[0] }}</label> <br>
-        {% endfor %}
-    </form>
-</div>
+<div class="task-section">
+    <div class="task-sub">
+        <h3>On Going</h3>
+        <div class="task-list">
+            <form action="/" method="post" id="ongoing-form">
+                {% for i in ongoing %}
+                <div class="input-group">
+                    <div class="input-group-text">
+                        <input type="checkbox" class="form-check-input mt-0 ongoing-tasks" name="task-ongoing"
+                            id="{{ i[0] }}" value="{{ i[1] }}">
+                    </div>
+                    <label class="input-group-text form-control">{{ i[0] }}</label>
+                </div>
+                {% endfor %}
+            </form>
+        </div>
+    </div>
 
-<div>
-    <h3>Completed</h3>
-    {% for i in completed %}
-    <p>{{ i[0] }}</p>
-    {% endfor %}
+    <div class="task-sub">
+        <h3>Completed</h3>
+        <div class="task-list">
+            {% for i in completed %}
+            <form action="/" method="post">
+                <div class="input-group">
+                    <div class="input-group-text">
+                        <input type="checkbox" class="form-check-input mt-0" checked onclick="return false"
+                            onkeydown="return false">
+                    </div>
+                    <label for="{{ i[0] }}" class="input-group-text form-control">{{ i[0] }}</label>
+                    <button class="btn btn-outline-secondary" type="submit" name="action" value="delete">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+                <input type="text" name="task-completed" hidden value="{{ i[1] }}">
+            </form>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 {% endblock %}

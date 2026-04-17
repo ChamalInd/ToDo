@@ -34,10 +34,10 @@ def after_request(response):
 @app.route('/', methods=['POST', 'GET'])
 @login_required
 def index():
+    # adding new items action
     if request.method == 'POST' and request.form.get('action') == 'add-new':
         item = request.form.get('item')
 
-        # adding new items action
         if item:
             # encrypting item
             f = Fernet(session['key'])
@@ -48,26 +48,34 @@ def index():
         else:
             flash('Task cannot be empty.')
     
+    # complete tasks action
     if request.method == 'POST':
-        task = request.form.get('task')
+        task = request.form.get('task-ongoing')
+        print(task)
 
-        # completing tasks action
         if task:
-            # encrypting task
             cur.execute('UPDATE todoitems SET category_id=2 WHERE id=?', (task, ))
+            con.commit()
+    
+    # remove completed tasks action
+    if request.method == 'POST' and request.form.get('action') == 'delete':
+        task = request.form.get('task-completed')
+
+        if task:
+            cur.execute('DELETE FROM todoitems WHERE id=?', (task, ))
             con.commit()
     
     # decrypting items
     _ = cur.execute('SELECT item, id, category_id from todoitems WHERE user_id=?', (session['user_id'], )).fetchall()
     f = Fernet(session['key'])
-    print(_)
     ongoing = []
     completed = []
     for i in _:
+        task = f.decrypt(i[0]).decode()
         if i[2] == 1:
-            ongoing.append([f.decrypt(i[0]).decode(), i[1]])
+            ongoing.append([task, i[1]])
         else:
-            completed.append([f.decrypt(i[0]).decode(), i[1]])
+            completed.append([task, i[1]])
 
     return render_template('index.html', ongoing=ongoing, completed=completed)
 
