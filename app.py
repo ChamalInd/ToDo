@@ -51,7 +51,6 @@ def index():
     # complete tasks action
     if request.method == 'POST':
         task = request.form.get('task-ongoing')
-        print(task)
 
         if task:
             cur.execute('UPDATE todoitems SET category_id=2 WHERE id=?', (task, ))
@@ -66,7 +65,7 @@ def index():
             con.commit()
     
     # decrypting items
-    _ = cur.execute('SELECT item, id, category_id from todoitems WHERE user_id=?', (session['user_id'], )).fetchall()
+    _ = cur.execute('SELECT item, id, category_id FROM todoitems WHERE user_id=?', (session['user_id'], )).fetchall()
     f = Fernet(session['key'])
     ongoing = []
     completed = []
@@ -77,7 +76,19 @@ def index():
         else:
             completed.append([task, i[1]])
 
-    return render_template('index.html', ongoing=ongoing, completed=completed)
+    # checking user progress 
+    done = cur.execute('SELECT COUNT(*) FROM todoitems WHERE user_id=? AND category_id=2', (session['user_id'], )).fetchall()[0][0]
+    total = cur.execute('SELECT COUNT(*) FROM todoitems WHERE user_id=?', (session['user_id'], )).fetchall()[0][0]
+
+    progress = done / total * 100
+
+    return render_template('index.html', ongoing=ongoing, completed=completed, progress=progress)
+
+
+@app.route('/profile', methods=['POST', 'GET'])
+@login_required
+def profile():
+    return render_template('profile.html')
 
 
 @app.route('/register', methods=['POST', 'GET'])
